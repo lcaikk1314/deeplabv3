@@ -94,8 +94,8 @@ train_dirs = ["jena/", "zurich/", "weimar/", "ulm/", "tubingen/", "stuttgart/",
 val_dirs = ["frankfurt/", "munster/", "lindau/"]
 test_dirs = ["berlin", "bielefeld", "bonn", "leverkusen", "mainz", "munich"]
 
-cityscapes_data_path = "/root/deeplabv3/data/cityscapes"
-cityscapes_meta_path = "/root/deeplabv3/data/cityscapes/meta"
+cityscapes_data_path = "/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/data/cityscapes"###############
+cityscapes_meta_path = "/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/data/cityscapes/meta"###############
 
 if not os.path.exists(cityscapes_meta_path):
     os.makedirs(cityscapes_meta_path)
@@ -181,7 +181,7 @@ class_weights = []
 total_count = sum(trainId_to_count.values())
 for trainId, count in trainId_to_count.items():
     trainId_prob = float(count)/float(total_count)
-    trainId_weight = 1/np.log(1.02 + trainId_prob)
+    trainId_weight = 1/np.log(1.02 + trainId_prob)########？？
     class_weights.append(trainId_weight)
 
 print (class_weights)
