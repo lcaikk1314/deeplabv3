@@ -1,13 +1,14 @@
 # camera-ready
 
 import sys
+#import time
 
 from datasets import DatasetTrain, DatasetVal # (this needs to be imported before torch, because cv2 needs to be imported before torch for some reason)
 
-sys.path.append("/root/deeplabv3/model")
+sys.path.append("/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/model")
 from deeplabv3 import DeepLabV3
 
-sys.path.append("/root/deeplabv3/utils")
+sys.path.append("/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/utils")
 from utils import add_weight_decay
 
 import torch
@@ -31,14 +32,14 @@ model_id = "1"
 
 num_epochs = 1000
 batch_size = 3
-learning_rate = 0.0001
+learning_rate = 0.0001#需要增加学习率的控制，不要固定一个学习率,应该迭代400时候降一次
 
-network = DeepLabV3(model_id, project_dir="/root/deeplabv3").cuda()
+network = DeepLabV3(model_id, project_dir="/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3").cuda()
 
-train_dataset = DatasetTrain(cityscapes_data_path="/root/deeplabv3/data/cityscapes",
-                             cityscapes_meta_path="/root/deeplabv3/data/cityscapes/meta")
-val_dataset = DatasetVal(cityscapes_data_path="/root/deeplabv3/data/cityscapes",
-                         cityscapes_meta_path="/root/deeplabv3/data/cityscapes/meta")
+train_dataset = DatasetTrain(cityscapes_data_path="/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/data/cityscapes",
+                             cityscapes_meta_path="/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/data/cityscapes/meta")
+val_dataset = DatasetVal(cityscapes_data_path="/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/data/cityscapes",
+                         cityscapes_meta_path="/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/data/cityscapes/meta")
 
 num_train_batches = int(len(train_dataset)/batch_size)
 num_val_batches = int(len(val_dataset)/batch_size)
@@ -55,8 +56,9 @@ val_loader = torch.utils.data.DataLoader(dataset=val_dataset,
 params = add_weight_decay(network, l2_value=0.0001)
 optimizer = torch.optim.Adam(params, lr=learning_rate)
 
-with open("/root/deeplabv3/data/cityscapes/meta/class_weights.pkl", "rb") as file: # (needed for python3)
+with open("/workspace/mnt/group/other/luchao/deeplabv3/deeplabv3/data/cityscapes/meta/class_weights.pkl", "rb") as file: # (needed for python3)
     class_weights = np.array(pickle.load(file))
+    print(class_weights)
 class_weights = torch.from_numpy(class_weights)
 class_weights = Variable(class_weights.type(torch.FloatTensor)).cuda()
 
@@ -145,4 +147,6 @@ for epoch in range(num_epochs):
 
     # save the model weights to disk:
     checkpoint_path = network.checkpoints_dir + "/model_" + model_id +"_epoch_" + str(epoch+1) + ".pth"
+    print(checkpoint_path)
+    time.sleep(10)
     torch.save(network.state_dict(), checkpoint_path)
